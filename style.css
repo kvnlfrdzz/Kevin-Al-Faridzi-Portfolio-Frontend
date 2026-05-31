@@ -53,6 +53,11 @@ body {
   cursor: none;
 }
 
+#main-content {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 @media (hover:none),(pointer:coarse) { body { cursor: auto; } }
 
 img { max-width: 100%; height: auto; display: block; }
@@ -592,18 +597,89 @@ a:focus-visible, button:focus-visible {
 /* Hero responsive */
 @media (max-width:1024px) { .hero-wrap { grid-template-columns: 1fr 0.2fr 1fr; padding: 40px 24px 70px; } }
 @media (max-width:768px) {
-  .hero-section { min-height: 100svh; }
-  .hero-wrap { grid-template-columns: 1fr; grid-template-rows: auto; padding: 28px 20px 80px; gap: 28px; align-items: start; justify-items: start; }
-  .hero-col-left  { padding-right: 0; max-width: 100%; width: 100%; }
-  .hero-col-center{ display: none; }
-  .hero-col-right { padding-left: 0;  max-width: 100%; width: 100%; }
-  .hero-photo-overlay { background: linear-gradient(to right,#000 0%,rgba(0,0,0,0.3) 50%,#000 100%), linear-gradient(to bottom,#000 0%,transparent 15%,transparent 70%,#000 100%); }
+  .hero-section {
+    min-height: 100svh;
+    overflow-x: hidden;
+  }
+  .hero-wrap {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    padding: 28px 20px 80px;
+    gap: 28px;
+    align-items: start;
+    justify-items: start;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+  .hero-col-left {
+    padding-right: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+  .hero-col-center { display: none; }
+  .hero-col-right {
+    padding-left: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .hero-photo-overlay {
+    background:
+      linear-gradient(to right,#000 0%,rgba(0,0,0,0.3) 50%,#000 100%),
+      linear-gradient(to bottom,#000 0%,transparent 15%,transparent 70%,#000 100%);
+  }
   .hero-photo-bg-img { object-position: 65% top; }
+
+  /* Prevent overflow pada elemen hero */
+  .hero-status-pill {
+    max-width: 100%;
+    flex-shrink: 1;
+  }
+  .hero-title { width: 100%; }
+  .hero-name,
+  .hero-name-outline {
+    font-size: clamp(2rem, 10vw, 3.5rem);
+    word-break: break-word;
+  }
+  .hero-role { font-size: clamp(1rem, 5vw, 1.5rem); }
+  .hero-typing-wrap {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  .typing-text-el {
+    max-width: calc(100vw - 100px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .hero-pills { max-width: 100%; }
+  .hero-cta-group { flex-wrap: wrap; width: 100%; }
+  .hero-social { flex-wrap: wrap; max-width: 100%; }
+  .hero-stats-card {
+    width: 100%;
+    box-sizing: border-box;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .hero-right-badges { max-width: 100%; }
+  .hero-desc { max-width: 100%; }
 }
+
 @media (max-width:480px) {
   .hero-wrap { padding: 24px 16px 80px; }
   .stat-div { display: none; }
   .hero-stats-card { flex-wrap: wrap; gap: 14px; }
+  .hero-name,
+  .hero-name-outline {
+    font-size: clamp(1.8rem, 9vw, 3rem);
+  }
+  .typing-text-el {
+    max-width: calc(100vw - 80px);
+  }
 }
 
 /* ================================================================
@@ -944,29 +1020,19 @@ a:focus-visible, button:focus-visible {
 }
 
 /* ================================================================
-   REDUCED MOTION — Matikan semua animasi jika user prefer
-================================================================ */
-@media (prefers-reduced-motion: reduce) {
-  *, ::before, ::after {
-    animation-duration:        0.01ms !important;
-    animation-iteration-count: 1      !important;
-    transition-duration:       0.01ms !important;
-    scroll-behavior:           auto   !important;
-  }
-  #hero-canvas { display: none; }
-}
-
-/* ================================================================
    COLD START LOADER — Loading State untuk API Cold Start
    ================================================================ */
 
 .cold-start-loader {
-  display: none; /* dikontrol via JS */
+  display: none;
   flex-direction: column;
   align-items: center;
-  gap: 32px;
-  padding: 56px 24px 64px;
+  gap: 28px;
+  padding: 48px 16px 56px;
   text-align: center;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* ── Spinner ── */
@@ -1235,6 +1301,19 @@ a:focus-visible, button:focus-visible {
   .csl-steps {
     max-width: 100%;
   }
+}
+
+/* ================================================================
+   REDUCED MOTION — Matikan semua animasi jika user prefer
+================================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration:        0.01ms !important;
+    animation-iteration-count: 1      !important;
+    transition-duration:       0.01ms !important;
+    scroll-behavior:           auto   !important;
+  }
+  #hero-canvas { display: none; }
 }
 
 @media print {

@@ -32,7 +32,7 @@
   <div class="loading-corner loading-corner-tl">KEVIN AL FARIDZI</div>
   <div class="loading-corner loading-corner-tr">PORTFOLIO</div>
   <div class="loading-corner loading-corner-bl">© 2025</div>
-  <div class="loading-corner loading-corner-br">v7.0</div>
+  <div class="loading-corner loading-corner-br">v26.05</div>
   <div class="loading-inner">
     <div class="loading-logo-mark">
       <div class="loading-logo-ring loading-logo-ring-1"></div>
@@ -473,7 +473,7 @@
   </section>
 
 <!-- ================================================================
-     PROJECTS SECTION
+     PROJECTS SECTION — Mobile Fixed
      ================================================================ -->
 <section id="projects" class="section-base">
   <div class="sec-glow sec-glow-left"></div>
@@ -490,18 +490,21 @@
         Karya<br/>
         <span class="sec-heading-outline">Terbaru.</span>
       </h2>
-      <p class="sec-sub">Project yang telah dibangun. Data dimuat langsung dari backend API.</p>
+      <p class="sec-sub">
+        Project yang telah dibangun. Data dimuat langsung dari backend API.
+      </p>
     </div>
 
     <!-- API Status Bar -->
     <div class="api-status-bar" id="api-status" data-reveal>
       <span class="api-dot" id="api-status-dot"></span>
-      <span class="api-status-text" id="api-status-text">Menghubungkan ke API...</span>
+      <span class="api-status-text" id="api-status-text">
+        Menghubungkan ke API...
+      </span>
     </div>
 
     <!-- ============================================================
          COLD START LOADING STATE
-         Ditampilkan saat fetch dimulai, disembunyikan saat data tiba
          ============================================================ -->
     <div id="projects-cold-start-loader" class="cold-start-loader">
 
@@ -519,24 +522,25 @@
       <div class="csl-text-wrap">
         <p class="csl-title">Sedang memuat data proyek…</p>
         <p class="csl-subtitle">
-          Menghubungkan ke server backend. Karena server baru aktif setelah tidak dipakai,
+          Menghubungkan ke server backend. Karena server baru aktif
+          setelah tidak dipakai,
           <strong>mohon tunggu sekitar 30–50 detik ya!</strong> ☕
         </p>
 
-        <!-- Progress bar animasi -->
+        <!-- Progress bar -->
         <div class="csl-progress-wrap">
           <div class="csl-progress-bar" id="csl-progress-bar"></div>
         </div>
 
-        <!-- Countdown timer -->
+        <!-- Countdown -->
         <p class="csl-countdown" id="csl-countdown-text">
           ⏱ Estimasi: sedang menghubungkan…
         </p>
 
-        <!-- Status steps -->
+        <!-- Steps — disembunyikan otomatis di HP kecil via CSS -->
         <div class="csl-steps">
           <div class="csl-step" id="csl-step-1">
-            <span class="csl-step-dot csl-step-active"></span>
+            <span class="csl-step-dot"></span>
             <span class="csl-step-label">Mengirim request ke server…</span>
           </div>
           <div class="csl-step" id="csl-step-2">
@@ -549,12 +553,14 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Skeleton Grid (tetap ada, ditampilkan bersama loader di atas) -->
+    </div>
+    <!-- / cold-start-loader -->
+
+    <!-- Skeleton Grid -->
     <div id="projects-skeleton"
          class="projects-grid"
-         style="display:none; margin-top: 24px;">
+         style="display:none; margin-top:20px;">
       <div class="skel-card skel-lg"></div>
       <div class="skel-card skel-md"></div>
       <div class="skel-card skel-md"></div>
@@ -563,7 +569,7 @@
       <div class="skel-card skel-md"></div>
     </div>
 
-    <!-- Projects Grid (disembunyikan sampai data tiba) -->
+    <!-- Projects Grid -->
     <div id="projects-grid" class="projects-grid hidden"></div>
 
     <!-- ============================================================
@@ -571,26 +577,35 @@
          ============================================================ -->
     <div id="projects-error" class="hidden">
       <div class="state-box error-state-box">
-        <!-- Icon -->
-        <div class="state-icon" style="border-color:rgba(248,113,113,0.3);background:rgba(248,113,113,0.08);">
-          <svg width="28" height="28" fill="none" stroke="rgba(248,113,113,0.9)" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-              d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+        <div class="state-icon"
+          style="border-color:rgba(248,113,113,0.3);
+                 background:rgba(248,113,113,0.08);">
+          <svg width="26" height="26" fill="none"
+               stroke="rgba(248,113,113,0.9)" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0
+                     001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2
+                     2 0 00-3.42 0z"/>
           </svg>
         </div>
         <p class="state-title">Gagal Memuat Projects</p>
-        <p class="state-msg" id="error-message">Tidak dapat terhubung ke API backend.</p>
-        <p class="state-msg" style="margin-top:4px; font-size:0.8rem; opacity:0.6;">
-          Silakan refresh halaman untuk mencoba lagi.
+        <p class="state-msg" id="error-message">
+          Tidak dapat terhubung ke API backend.
         </p>
-        <!-- Retry button -->
-        <button
-          onclick="retryFetchProjects()"
-          class="csl-retry-btn"
-          style="margin-top: 20px;">
-          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        <p class="state-msg"
+           style="margin-top:4px;font-size:0.8rem;opacity:0.6;">
+          Silakan refresh halaman atau klik tombol di bawah.
+        </p>
+        <button onclick="retryFetchProjects()" class="csl-retry-btn"
+                style="margin-top:20px;">
+          <svg width="14" height="14" fill="none"
+               stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0
+                     004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003
+                     8.003 0 01-15.357-2m15.357 2H15"/>
           </svg>
           <span>Coba Lagi</span>
         </button>
@@ -600,15 +615,24 @@
     <!-- EMPTY STATE -->
     <div id="projects-empty" class="hidden">
       <div class="state-box">
-        <div class="state-icon" style="border-color:rgba(100,116,139,0.3);background:rgba(100,116,139,0.08);">
-          <svg width="28" height="28" fill="none" stroke="rgba(148,163,184,0.7)" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-              d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2z"/>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/>
+        <div class="state-icon"
+          style="border-color:rgba(100,116,139,0.3);
+                 background:rgba(100,116,139,0.08);">
+          <svg width="26" height="26" fill="none"
+               stroke="rgba(148,163,184,0.7)" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2
+                     2 0 00-2-2H5a2 2 0 00-2 2z"/>
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/>
           </svg>
         </div>
         <p class="state-title">Belum Ada Project</p>
-        <p class="state-msg">Project akan muncul setelah ditambahkan via Admin Panel.</p>
+        <p class="state-msg">
+          Project akan muncul setelah ditambahkan via Admin Panel.
+        </p>
       </div>
     </div>
 
