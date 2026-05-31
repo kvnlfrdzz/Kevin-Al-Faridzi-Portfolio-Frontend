@@ -758,71 +758,325 @@ function renderGrid(projects) {
   });
 }
 
+/* ================================================================
+   COLD START LOADER — CONTROLLER
+   Mengatur tampilan, countdown timer, dan step indicator
+   ================================================================ */
+
+let _coldStartTimerInterval = null;  // interval countdown
+let _coldStartProgressInterval = null; // interval progress bar
+let _coldStartElapsedSeconds = 0;
+const COLD_START_TIMEOUT_MS = 90000; // 90 detik total timeout
+
+/**
+ * Tampilkan Cold Start Loader dan mulai semua animasinya.
+ */
+function showColdStartLoader() {
+  const loader = document.getElementById('projects-cold-start-loader');
+  const skeleton = document.getElementById('projects-skeleton');
+  if (!loader) return;
+
+  // Tampilkan loader
+  loader.style.display = 'flex';
+
+  // Tampilkan skeleton di bawah loader
+  if (skeleton) skeleton.style.display = 'grid';
+
+  // Reset state
+  _coldStartElapsedSeconds = 0;
+  _resetSteps();
+  _setStepActive(1);
+
+  // Mulai countdown timer
+  _startCountdown();
+
+  // Mulai progress bar animasi
+  _startProgressBar();
+}
+
+/**
+ * Sembunyikan Cold Start Loader dan hentikan semua animasinya.
+ */
+function hideColdStartLoader() {
+  const loader = document.getElementById('projects-cold-start-loader');
+  const skeleton = document.getElementById('projects-skeleton');
+
+  _stopCountdown();
+  _stopProgressBar();
+
+  if (loader) {
+    // Animasi fade-out sebelum benar-benar disembunyikan
+    loader.style.transition = 'opacity 500ms ease, transform 500ms ease';
+    loader.style.opacity = '0';
+    loader.style.transform = 'translateY(-8px)';
+    setTimeout(() => {
+      loader.style.display = 'none';
+      loader.style.opacity = '';
+      loader.style.transform = '';
+      loader.style.transition = '';
+    }, 520);
+  }
+
+  if (skeleton) {
+    skeleton.style.transition = 'opacity 400ms ease';
+    skeleton.style.opacity = '0';
+    setTimeout(() => {
+      skeleton.style.display = 'none';
+      skeleton.style.opacity = '';
+      skeleton.style.transition = '';
+    }, 420);
+  }
+}
+
+/** Reset semua step ke kondisi awal (inactive) */
+function _resetSteps() {
+  [1, 2, 3].forEach(n => {
+    const step = document.getElementById(`csl-step-${n}`);
+    if (!step) return;
+    step.classList.remove('csl-step-active-state', 'csl-step-done-state');
+  });
+}
+
+/** Tandai step ke-n sebagai AKTIF, step sebelumnya sebagai DONE */
+function _setStepActive(n) {
+  _resetSteps();
+  for (let i = 1; i < n; i++) {
+    const prev = document.getElementById(`csl-step-${i}`);
+    if (prev) prev.classList.add('csl-step-done-state');
+  }
+  const current = document.getElementById(`csl-step-${n}`);
+  if (current) current.classList.add('csl-step-active-state');
+}
+
+/** Mulai countdown timer dan update teks setiap detik */
+function _startCountdown() {
+  _stopCountdown(); // pastikan tidak ada interval ganda
+  const countdownEl = document.getElementById('csl-countdown-text');
+  _coldStartElapsedSeconds = 0;
+
+  _coldStartTimerInterval = setInterval(() => {
+    _coldStartElapsedSeconds++;
+    const elapsed = _coldStartElapsedSeconds;
+    const remaining = Math.max(0, Math.ceil(COLD_START_TIMEOUT_MS / 1000) - elapsed);
+
+    if (!countdownEl) return;
+
+    if (elapsed <= 5) {
+      countdownEl.textContent = '⏱ Mengirim request ke server…';
+      _setStepActive(1);
+    } else if (elapsed <= 15) {
+      countdownEl.textContent = `⏱ Server sedang aktif… (${elapsed}s)`;
+      _setStepActive(2);
+    } else if (elapsed <= 45) {
+      countdownEl.textContent = `⏱ Hampir selesai… mohon tunggu (${elapsed}s)`;
+      _setStepActive(2);
+    } else if (elapsed <= 60) {
+      countdownEl.textContent = `⏱ Masih loading… (${elapsed}s) — hampir pasti berhasil!`;
+      _setStepActive(3);
+    } else {
+      countdownEl.textContent = `⏱ Sudah ${elapsed}s — server sedang diaktifkan dari tidur…`;
+      _setStepActive(3);
+    }
+  }, 1000);
+}
+
+/** Hentikan countdown timer */
+function _stopCountdown() {
+  if (_coldStartTimerInterval) {
+    clearInterval(_coldStartTimerInterval);
+    _coldStartTimerInterval = null;
+  }
+}
+
+/** Animasikan progress bar secara bertahap hingga ~92% */
+function _startProgressBar() {
+  _stopProgressBar();
+  const bar = document.getElementById('csl-progress-bar');
+  if (!bar) return;
+
+  bar.style.width = '0%';
+  let progress = 0;
+  const totalMs = COLD_START_TIMEOUT_MS * 0.95; // capai 92% dalam 95% dari total timeout
+  const intervalMs = 400;
+  const maxProgress = 92;
+
+  _coldStartProgressInterval = setInterval(() => {
+    const remaining = maxProgress - progress;
+    // Makin dekat ke atas, makin lambat naiknya (simulasi real loading)
+    const increment = remaining * 0.04 + 0.3;
+    progress = Math.min(progress + increment, maxProgress);
+    if (bar) bar.style.width = progress + '%';
+
+    if (progress >= maxProgress) {
+      _stopProgressBar();
+    }
+  }, intervalMs);
+}
+
+/** Set progress bar ke 100% (saat berhasil) */
+function _completeProgressBar() {
+  _stopProgressBar();
+  const bar = document.getElementById('csl-progress-bar');
+  if (bar) {
+    bar.style.transition = 'width 400ms ease';
+    bar.style.width = '100%';
+    // Ubah warna jadi hijau saat sukses
+    bar.style.background = 'linear-gradient(90deg, #22c55e, #4ade80)';
+  }
+}
+
+/** Hentikan animasi progress bar */
+function _stopProgressBar() {
+  if (_coldStartProgressInterval) {
+    clearInterval(_coldStartProgressInterval);
+    _coldStartProgressInterval = null;
+  }
+}
+
+/* ================================================================
+   FETCH PROJECTS — Versi baru dengan Cold Start handling
+   ================================================================ */
+
+/**
+ * Fungsi utama fetch projects.
+ * Dipanggil saat DOMContentLoaded dan bisa dipanggil ulang via retryFetchProjects().
+ */
 async function fetchProjects() {
-  const skel    = document.getElementById('projects-skeleton');
   const grid    = document.getElementById('projects-grid');
   const errEl   = document.getElementById('projects-error');
   const emptyEl = document.getElementById('projects-empty');
   const footer  = document.getElementById('projects-footer');
 
-  if (skel)    skel.style.display = 'grid';
+  // ── 1. Reset semua state UI ke kondisi awal ──
   if (grid)    grid.classList.add('hidden');
   if (errEl)   errEl.classList.add('hidden');
   if (emptyEl) emptyEl.classList.add('hidden');
   if (footer)  footer.classList.add('hidden');
 
-  updateApiStatus('loading', 'Menghubungkan ke API backend…');
+  // ── 2. Tampilkan Cold Start Loader ──
+  showColdStartLoader();
+  updateApiStatus('loading', 'Menghubungkan ke API backend… (cold start mungkin 30–50 detik)');
 
   try {
+    // ── 3. Fetch dengan timeout 90 detik (mengakomodasi cold start) ──
     const ctrl = new AbortController();
-    const tid  = setTimeout(() => ctrl.abort(), 10000);
-    const res  = await fetch(CONFIG.API_ENDPOINT, {
+    const timeoutId = setTimeout(() => ctrl.abort(), COLD_START_TIMEOUT_MS);
+
+    const res = await fetch(CONFIG.API_ENDPOINT, {
       method: 'GET',
-      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+      headers: {
+        'Accept':       'application/json',
+        'Content-Type': 'application/json',
+      },
       signal: ctrl.signal,
     });
-    clearTimeout(tid);
-    if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+
+    clearTimeout(timeoutId);
+
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    }
+
     const data = await res.json();
 
+    // ── 4. Parse struktur data dari berbagai format respons Laravel ──
     let projects = [];
-    if (Array.isArray(data))                               projects = data;
-    else if (data.data    && Array.isArray(data.data))     projects = data.data;
+    if (Array.isArray(data))                          projects = data;
+    else if (data.data && Array.isArray(data.data))   projects = data.data;
     else if (data.projects && Array.isArray(data.projects)) projects = data.projects;
     else if (data.data?.data && Array.isArray(data.data.data)) projects = data.data.data;
     else throw new Error('Struktur data tidak dikenali.');
 
-    allProjects = projects; projectsLoaded = true;
-    if (skel) skel.style.display = 'none';
+    // ── 5. Simpan data ke state global ──
+    allProjects    = projects;
+    projectsLoaded = true;
 
+    // ── 6. Selesaikan progress bar dengan animasi hijau ──
+    _completeProgressBar();
+    _setStepActive(4); // semua step done (step 4 tidak ada, otomatis semua jadi done)
+    [1, 2, 3].forEach(n => {
+      const s = document.getElementById(`csl-step-${n}`);
+      if (s) {
+        s.classList.remove('csl-step-active-state');
+        s.classList.add('csl-step-done-state');
+      }
+    });
+
+    // ── 7. Sembunyikan loader (dengan delay kecil agar animasi terlihat) ──
+    await new Promise(resolve => setTimeout(resolve, 500));
+    hideColdStartLoader();
+
+    // ── 8. Handle empty data ──
     if (!projects.length) {
       updateApiStatus('empty', 'API berhasil. Belum ada project.');
-      emptyEl?.classList.remove('hidden');
+      if (emptyEl) emptyEl.classList.remove('hidden');
       return;
     }
 
+    // ── 9. Render project cards ──
     renderGrid(projects);
-    const ct = document.getElementById('projects-count-text');
-    if (ct) ct.textContent = `Menampilkan ${projects.length} project`;
-    footer?.classList.remove('hidden');
-    updateApiStatus('success', `API terhubung — ${projects.length} project dimuat`);
+
+    const countText = document.getElementById('projects-count-text');
+    if (countText) countText.textContent = `Menampilkan ${projects.length} project`;
+
+    if (footer) footer.classList.remove('hidden');
+
+    updateApiStatus(
+      'success',
+      `API terhubung — ${projects.length} project dimuat`
+    );
+
+    // Update counter di hero section
     animCounter('counter-projects', 0, Math.max(projects.length, 10), 1400);
 
-  } catch (e) {
-    console.error('[Portfolio]', e);
-    if (skel) skel.style.display = 'none';
-    grid?.classList.add('hidden');
-    errEl?.classList.remove('hidden');
-    let msg = 'Tidak dapat terhubung ke API backend.';
-    if      (e.name === 'AbortError')        msg = 'Request timeout. Backend mungkin tidak aktif.';
-    else if (e.message.includes('Failed'))   msg = `Pastikan backend berjalan di: ${CONFIG.API_BASE_URL}`;
-    else if (e.message.includes('HTTP 404')) msg = 'Endpoint API tidak ditemukan.';
-    else if (e.message.includes('HTTP 5'))   msg = 'Server backend error. Cek log Laravel.';
-    else                                     msg = e.message || 'Error tidak diketahui.';
-    const em = document.getElementById('error-message');
-    if (em) em.textContent = msg;
-    updateApiStatus('error', `Gagal — ${msg}`);
+  } catch (err) {
+    console.error('[Portfolio] fetchProjects error:', err);
+
+    // ── 10. Hentikan semua animasi loader ──
+    hideColdStartLoader();
+
+    // ── 11. Sembunyikan grid, tampilkan error ──
+    if (grid) grid.classList.add('hidden');
+    if (errEl) errEl.classList.remove('hidden');
+
+    // ── 12. Tentukan pesan error yang ramah ──
+    let friendlyMsg = 'Tidak dapat terhubung ke API backend.';
+
+    if (err.name === 'AbortError') {
+      friendlyMsg =
+        'Server backend tidak merespons setelah 90 detik. ' +
+        'Kemungkinan server sedang down. Silakan refresh halaman atau coba lagi nanti.';
+    } else if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+      friendlyMsg = `Gagal terhubung ke: ${CONFIG.API_BASE_URL} — Pastikan koneksi internet Anda stabil.`;
+    } else if (err.message.includes('HTTP 404')) {
+      friendlyMsg = 'Endpoint API tidak ditemukan (404). Pastikan URL API sudah benar.';
+    } else if (err.message.includes('HTTP 5')) {
+      friendlyMsg = 'Server backend mengalami error internal. Silakan coba lagi nanti.';
+    } else if (err.message.includes('Struktur data')) {
+      friendlyMsg = 'Format respons API tidak sesuai yang diharapkan.';
+    } else {
+      friendlyMsg = err.message || 'Terjadi error yang tidak diketahui.';
+    }
+
+    // Set pesan ke elemen error
+    const errorMsgEl = document.getElementById('error-message');
+    if (errorMsgEl) errorMsgEl.textContent = friendlyMsg;
+
+    updateApiStatus('error', `Gagal — ${friendlyMsg}`);
   }
+}
+
+/**
+ * Fungsi retry — dipanggil oleh tombol "Coba Lagi" di error state.
+ * Mereset UI lalu memanggil fetchProjects() ulang.
+ */
+function retryFetchProjects() {
+  // Reset state global
+  allProjects    = [];
+  projectsLoaded = false;
+
+  // Panggil ulang fetch
+  fetchProjects();
 }
 
 /* ================================================================

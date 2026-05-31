@@ -472,53 +472,153 @@
     </div>
   </section>
 
-  <!-- SECTION 4 — PROJECTS -->
-  <section id="projects" class="section-base" style="overflow:hidden;">
-    <div class="sec-glow sec-glow-center"></div>
-    <div class="sec-container">
-      <div class="sec-label" data-reveal>
-        <div class="sec-label-line"></div>
-        <span class="sec-label-text">03 — Projects</span>
-      </div>
-      <div class="sec-heading-row" data-reveal>
-        <h2 class="sec-heading">Karya<br/><span class="sec-heading-outline">Terbaru.</span></h2>
-        <p class="sec-sub">Project yang telah dibangun. Data dimuat langsung dari backend API.</p>
-      </div>
-      <div id="api-status" class="api-status-bar" data-reveal>
-        <div id="api-status-dot" class="api-dot"></div>
-        <span id="api-status-text" class="api-status-text">Menghubungkan ke API...</span>
-      </div>
-      <div id="projects-skeleton" class="projects-grid">
-        <div class="skel-card skel-lg"></div>
-        <div class="skel-card skel-md"></div>
-        <div class="skel-card skel-md"></div>
-        <div class="skel-card skel-wide"></div>
-      </div>
-      <div id="projects-error" class="hidden state-box">
-        <div class="state-icon" style="border-color:rgba(248,113,113,0.25);background:rgba(248,113,113,0.06)">
-          <svg width="32" height="32" fill="none" stroke="#f87171" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-          </svg>
+<!-- ================================================================
+     PROJECTS SECTION
+     ================================================================ -->
+<section id="projects" class="section-base">
+  <div class="sec-glow sec-glow-left"></div>
+  <div class="sec-glow sec-glow-right"></div>
+  <div class="sec-container">
+
+    <div class="sec-label" data-reveal>
+      <div class="sec-label-line"></div>
+      <span class="sec-label-text">03 — Projects</span>
+    </div>
+
+    <div class="sec-heading-row" data-reveal>
+      <h2 class="sec-heading">
+        Karya<br/>
+        <span class="sec-heading-outline">Terbaru.</span>
+      </h2>
+      <p class="sec-sub">Project yang telah dibangun. Data dimuat langsung dari backend API.</p>
+    </div>
+
+    <!-- API Status Bar -->
+    <div class="api-status-bar" id="api-status" data-reveal>
+      <span class="api-dot" id="api-status-dot"></span>
+      <span class="api-status-text" id="api-status-text">Menghubungkan ke API...</span>
+    </div>
+
+    <!-- ============================================================
+         COLD START LOADING STATE
+         Ditampilkan saat fetch dimulai, disembunyikan saat data tiba
+         ============================================================ -->
+    <div id="projects-cold-start-loader" class="cold-start-loader">
+
+      <!-- Spinner -->
+      <div class="csl-spinner-wrap">
+        <div class="csl-spinner">
+          <div class="csl-spinner-ring csl-ring-1"></div>
+          <div class="csl-spinner-ring csl-ring-2"></div>
+          <div class="csl-spinner-ring csl-ring-3"></div>
+          <div class="csl-spinner-dot"></div>
         </div>
-        <h3 class="state-title">Gagal Memuat Projects</h3>
-        <p class="state-msg" id="error-message">Tidak dapat terhubung ke API backend.</p>
-        <button onclick="fetchProjects()" class="btn-primary" style="margin-top:8px">Coba Lagi</button>
       </div>
-      <div id="projects-empty" class="hidden state-box">
-        <div class="state-icon" style="font-size:2rem;border-color:rgba(255,255,255,0.1)">📂</div>
-        <h3 class="state-title">Belum Ada Project</h3>
-        <p class="state-msg">Project akan muncul setelah ditambahkan via Admin Panel.</p>
-      </div>
-      <div id="projects-grid" class="hidden projects-grid"></div>
-      <div id="projects-footer" class="hidden proj-footer" data-reveal>
-        <p class="proj-count" id="projects-count-text"></p>
-        <a href="https://github.com/kvnlfrdzz" target="_blank" rel="noopener" class="btn-outline" style="gap:8px">
-          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
-          Lihat Semua di GitHub
-        </a>
+
+      <!-- Teks informatif -->
+      <div class="csl-text-wrap">
+        <p class="csl-title">Sedang memuat data proyek…</p>
+        <p class="csl-subtitle">
+          Menghubungkan ke server backend. Karena server baru aktif setelah tidak dipakai,
+          <strong>mohon tunggu sekitar 30–50 detik ya!</strong> ☕
+        </p>
+
+        <!-- Progress bar animasi -->
+        <div class="csl-progress-wrap">
+          <div class="csl-progress-bar" id="csl-progress-bar"></div>
+        </div>
+
+        <!-- Countdown timer -->
+        <p class="csl-countdown" id="csl-countdown-text">
+          ⏱ Estimasi: sedang menghubungkan…
+        </p>
+
+        <!-- Status steps -->
+        <div class="csl-steps">
+          <div class="csl-step" id="csl-step-1">
+            <span class="csl-step-dot csl-step-active"></span>
+            <span class="csl-step-label">Mengirim request ke server…</span>
+          </div>
+          <div class="csl-step" id="csl-step-2">
+            <span class="csl-step-dot"></span>
+            <span class="csl-step-label">Server sedang aktif (cold start)…</span>
+          </div>
+          <div class="csl-step" id="csl-step-3">
+            <span class="csl-step-dot"></span>
+            <span class="csl-step-label">Memuat data project…</span>
+          </div>
+        </div>
       </div>
     </div>
-  </section>
+
+    <!-- Skeleton Grid (tetap ada, ditampilkan bersama loader di atas) -->
+    <div id="projects-skeleton"
+         class="projects-grid"
+         style="display:none; margin-top: 24px;">
+      <div class="skel-card skel-lg"></div>
+      <div class="skel-card skel-md"></div>
+      <div class="skel-card skel-md"></div>
+      <div class="skel-card skel-wide"></div>
+      <div class="skel-card skel-md"></div>
+      <div class="skel-card skel-md"></div>
+    </div>
+
+    <!-- Projects Grid (disembunyikan sampai data tiba) -->
+    <div id="projects-grid" class="projects-grid hidden"></div>
+
+    <!-- ============================================================
+         ERROR STATE
+         ============================================================ -->
+    <div id="projects-error" class="hidden">
+      <div class="state-box error-state-box">
+        <!-- Icon -->
+        <div class="state-icon" style="border-color:rgba(248,113,113,0.3);background:rgba(248,113,113,0.08);">
+          <svg width="28" height="28" fill="none" stroke="rgba(248,113,113,0.9)" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+          </svg>
+        </div>
+        <p class="state-title">Gagal Memuat Projects</p>
+        <p class="state-msg" id="error-message">Tidak dapat terhubung ke API backend.</p>
+        <p class="state-msg" style="margin-top:4px; font-size:0.8rem; opacity:0.6;">
+          Silakan refresh halaman untuk mencoba lagi.
+        </p>
+        <!-- Retry button -->
+        <button
+          onclick="retryFetchProjects()"
+          class="csl-retry-btn"
+          style="margin-top: 20px;">
+          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          <span>Coba Lagi</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div id="projects-empty" class="hidden">
+      <div class="state-box">
+        <div class="state-icon" style="border-color:rgba(100,116,139,0.3);background:rgba(100,116,139,0.08);">
+          <svg width="28" height="28" fill="none" stroke="rgba(148,163,184,0.7)" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/>
+          </svg>
+        </div>
+        <p class="state-title">Belum Ada Project</p>
+        <p class="state-msg">Project akan muncul setelah ditambahkan via Admin Panel.</p>
+      </div>
+    </div>
+
+    <!-- Projects Footer -->
+    <div id="projects-footer" class="proj-footer hidden">
+      <p class="proj-count" id="projects-count-text"></p>
+    </div>
+
+  </div>
+</section>
 
   <!-- SECTION 5 — CONTACT -->
   <section id="contact" class="section-base" style="overflow:hidden;">

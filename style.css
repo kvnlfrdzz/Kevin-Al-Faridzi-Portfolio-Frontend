@@ -956,6 +956,287 @@ a:focus-visible, button:focus-visible {
   #hero-canvas { display: none; }
 }
 
+/* ================================================================
+   COLD START LOADER — Loading State untuk API Cold Start
+   ================================================================ */
+
+.cold-start-loader {
+  display: none; /* dikontrol via JS */
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  padding: 56px 24px 64px;
+  text-align: center;
+}
+
+/* ── Spinner ── */
+.csl-spinner-wrap {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+}
+
+.csl-spinner {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.csl-spinner-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  animation: csl-spin linear infinite;
+}
+
+.csl-ring-1 {
+  width: 80px;
+  height: 80px;
+  border-top-color: #38bdf8; /* --brand */
+  border-right-color: rgba(56, 189, 248, 0.25);
+  animation-duration: 1.4s;
+}
+
+.csl-ring-2 {
+  width: 58px;
+  height: 58px;
+  border-top-color: #a78bfa; /* --accent */
+  border-left-color: rgba(167, 139, 250, 0.25);
+  animation-duration: 1.1s;
+  animation-direction: reverse;
+}
+
+.csl-ring-3 {
+  width: 38px;
+  height: 38px;
+  border-top-color: rgba(56, 189, 248, 0.5);
+  animation-duration: 0.8s;
+}
+
+.csl-spinner-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.8);
+  animation: csl-dot-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes csl-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes csl-dot-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.7); }
+}
+
+/* ── Text wrap ── */
+.csl-text-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: 520px;
+}
+
+.csl-title {
+  font-weight: 700;
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+.csl-subtitle {
+  font-size: 0.875rem;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.csl-subtitle strong {
+  color: rgba(56, 189, 248, 0.9);
+  font-weight: 600;
+}
+
+/* ── Progress bar ── */
+.csl-progress-wrap {
+  width: 100%;
+  max-width: 360px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.csl-progress-bar {
+  height: 100%;
+  width: 0%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #0ea5e9, #a78bfa);
+  transition: width 1s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.csl-progress-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.5),
+    transparent
+  );
+  animation: csl-shimmer 2s ease infinite;
+}
+
+@keyframes csl-shimmer {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(200%); }
+}
+
+/* ── Countdown text ── */
+.csl-countdown {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.04em;
+  animation: csl-blink 2s ease-in-out infinite;
+}
+
+@keyframes csl-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+/* ── Steps indicator ── */
+.csl-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+  width: 100%;
+  max-width: 320px;
+  text-align: left;
+}
+
+.csl-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.35;
+  transition: opacity 600ms ease;
+}
+
+.csl-step.csl-step-active-state {
+  opacity: 1;
+}
+
+.csl-step.csl-step-done-state {
+  opacity: 0.7;
+}
+
+.csl-step-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  flex-shrink: 0;
+  transition: background 400ms ease, box-shadow 400ms ease;
+}
+
+.csl-step.csl-step-active-state .csl-step-dot {
+  background: #38bdf8;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.7);
+  animation: sdp 1.5s ease infinite;
+}
+
+.csl-step.csl-step-done-state .csl-step-dot {
+  background: #4ade80;
+  box-shadow: 0 0 6px rgba(74, 222, 128, 0.5);
+  animation: none;
+}
+
+.csl-step-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ── Retry button ── */
+.csl-retry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.6rem 1.4rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.825rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 200ms ease,
+    background 200ms ease,
+    color 200ms ease,
+    transform 200ms ease;
+  backdrop-filter: blur(4px);
+}
+
+.csl-retry-btn:hover {
+  border-color: rgba(255, 255, 255, 0.38);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  transform: scale(0.97);
+}
+
+.csl-retry-btn:active {
+  transform: scale(0.94);
+}
+
+/* ── Error state box ── */
+.error-state-box {
+  border: 1px solid rgba(248, 113, 113, 0.15);
+  border-radius: 20px;
+  background: rgba(248, 113, 113, 0.04);
+  padding: 48px 24px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .cold-start-loader {
+    padding: 40px 16px 48px;
+    gap: 24px;
+  }
+
+  .csl-spinner-wrap {
+    width: 64px;
+    height: 64px;
+  }
+
+  .csl-spinner {
+    width: 64px;
+    height: 64px;
+  }
+
+  .csl-ring-1 { width: 64px; height: 64px; }
+  .csl-ring-2 { width: 46px; height: 46px; }
+  .csl-ring-3 { width: 30px; height: 30px; }
+
+  .csl-steps {
+    max-width: 100%;
+  }
+}
+
 @media print {
   .navbar, #loading-screen, #opening-screen,
   .cursor-dot, .cursor-ring, #hero-canvas { display: none !important; }
