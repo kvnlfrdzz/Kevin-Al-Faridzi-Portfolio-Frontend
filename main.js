@@ -3,9 +3,9 @@
    CONFIG
 ================================================================ */
 const CONFIG = {
-  API_BASE_URL: 'https://kevin-al-faridzi-portfolio-backend.onrender.com/api',
+  API_BASE_URL: 'https://kevinalfaridzi.onrender.com/api',
   API_ENDPOINT:
-    'https://kevin-al-faridzi-portfolio-backend.onrender.com/api/projects',
+    'https://kevinalfaridzi.onrender.com/api/projects',
   TYPING_TEXTS: [
     'building cool web apps…',
     'learning Laravel & Tailwind…',
