@@ -1,11 +1,11 @@
 'use strict';
-
 /* ================================================================
    CONFIG
 ================================================================ */
 const CONFIG = {
   API_BASE_URL: 'https://kevin-al-faridzi-portfolio-backend.onrender.com/api',
-  API_ENDPOINT: 'https://kevin-al-faridzi-portfolio-backend.onrender.com/api/projects',
+  API_ENDPOINT:
+    'https://kevin-al-faridzi-portfolio-backend.onrender.com/api/projects',
   TYPING_TEXTS: [
     'building cool web apps…',
     'learning Laravel & Tailwind…',
@@ -39,21 +39,16 @@ let allProjects = [], projectsLoaded = false;
 
 /* ================================================================
    SMOOTH SCROLL HELPER
-   — Pengganti scroll-behavior:smooth bawaan browser
-   — Lebih presisi, bisa custom durasi & easing
 ================================================================ */
 function smoothScrollTo(targetY, duration = 700) {
-  // Hormati prefers-reduced-motion
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     window.scrollTo(0, targetY);
     return;
   }
-
   const startY    = window.scrollY;
   const distance  = targetY - startY;
   const startTime = performance.now();
 
-  // Easing: cubic ease in-out
   function ease(t) {
     return t < 0.5
       ? 4 * t * t * t
@@ -66,7 +61,6 @@ function smoothScrollTo(targetY, duration = 700) {
     window.scrollTo(0, startY + distance * ease(progress));
     if (progress < 1) requestAnimationFrame(step);
   }
-
   requestAnimationFrame(step);
 }
 
@@ -79,6 +73,7 @@ function smoothScrollTo(targetY, duration = 700) {
   const mainEl = document.getElementById('main-content');
   const barEl  = document.getElementById('loading-bar');
   const pctEl  = document.getElementById('loading-percent');
+
   if (!loadEl || !openEl || !mainEl) return;
 
   document.body.style.overflow = 'hidden';
@@ -86,15 +81,15 @@ function smoothScrollTo(targetY, duration = 700) {
   let progress = 0;
   const iv = setInterval(() => {
     const rem = 100 - progress;
-    progress  = Math.min(progress + Math.random() * rem * 0.15 + 1, 97);
+    progress = Math.min(progress + Math.random() * rem * 0.15 + 1, 97);
     if (barEl) barEl.style.width = progress + '%';
     if (pctEl) pctEl.textContent = Math.floor(progress) + '%';
   }, 80);
 
   setTimeout(() => {
     clearInterval(iv);
-    if (barEl) barEl.style.width = '100%';
-    if (pctEl) pctEl.textContent = '100%';
+    if (barEl) barEl.style.width  = '100%';
+    if (pctEl) pctEl.textContent  = '100%';
     setTimeout(() => {
       loadEl.classList.add('fade-out');
       setTimeout(() => {
@@ -110,9 +105,11 @@ function smoothScrollTo(targetY, duration = 700) {
 ================================================================ */
 function startOpening(openEl, mainEl) {
   openEl.classList.add('visible');
+
   const wordEl = document.getElementById('greeting-word');
   const langEl = document.getElementById('greeting-lang');
   const dotsEl = document.getElementById('opening-dots');
+
   if (!wordEl || !langEl) { endOpening(openEl, mainEl); return; }
 
   if (dotsEl) {
@@ -125,7 +122,8 @@ function startOpening(openEl, mainEl) {
 
   function setFontSize(w) {
     const l = w.length;
-    wordEl.style.fontSize = l <= 4 ? 'clamp(5rem,18vw,15rem)'
+    wordEl.style.fontSize =
+      l <= 4 ? 'clamp(5rem,18vw,15rem)'
       : l <= 6 ? 'clamp(4rem,14vw,11rem)'
       : l <= 8 ? 'clamp(3rem,11vw,9rem)'
       : 'clamp(2.5rem,8vw,7rem)';
@@ -141,11 +139,12 @@ function startOpening(openEl, mainEl) {
     wordEl.textContent = g.word;
     langEl.textContent = g.lang;
     wordEl.classList.remove('greeting-anim-out');
-    langEl.style.opacity    = '0';
+    langEl.style.opacity   = '0';
     langEl.style.transition = 'opacity 0.35s ease';
     void wordEl.offsetWidth;
     wordEl.classList.add('greeting-anim-in');
     setTimeout(() => { langEl.style.opacity = '1'; }, 220);
+
     const dur = index === 0 ? 800 : 560;
     timer = setTimeout(() => {
       if (!running) return;
@@ -178,7 +177,7 @@ function startOpening(openEl, mainEl) {
 function endOpening(openEl, mainEl) {
   openEl.classList.add('fade-out');
   setTimeout(() => {
-    openEl.style.display = 'none';
+    openEl.style.display   = 'none';
     document.body.style.overflow = '';
     mainEl.classList.add('visible');
     triggerHeroAnimations();
@@ -224,7 +223,7 @@ function endOpening(openEl, mainEl) {
 })();
 
 /* ================================================================
-   NAVBAR — AUTO HIDE (scroll bawah) / SHOW (scroll atas)
+   NAVBAR — AUTO HIDE / SHOW SMOOTH
 ================================================================ */
 (function initNav() {
   const navbar     = document.getElementById('navbar');
@@ -232,13 +231,11 @@ function endOpening(openEl, mainEl) {
   const mobileMenu = document.getElementById('mobile-menu');
   const navLinks   = document.querySelectorAll('.nav-link');
   const hlines     = document.querySelectorAll('.hline');
-  let   mobOpen    = false;
+  let mobOpen = false;
 
-  // ── Scroll: auto-hide / show navbar ──
   let lastScrollY = window.scrollY;
   let ticking     = false;
   let navHidden   = false;
-
   const HIDE_THRESHOLD = 80;
   const SCROLL_DELTA   = 6;
 
@@ -276,7 +273,6 @@ function endOpening(openEl, mainEl) {
     }
   }, { passive: true });
 
-  // ── Active link highlight ──
   function updateActive() {
     const secs = document.querySelectorAll('section[id]');
     let cur = '';
@@ -289,7 +285,6 @@ function endOpening(openEl, mainEl) {
     );
   }
 
-  // ── Mobile hamburger ──
   mobileBtn?.addEventListener('click', () => {
     mobOpen = !mobOpen;
     mobileMenu.classList.toggle('open', mobOpen);
@@ -301,30 +296,17 @@ function endOpening(openEl, mainEl) {
     hlines[2].style.width     = mobOpen ? '22px' : '';
   });
 
-  // ── Smooth scroll: LANGSUNG mulai, tanpa delay ──
   document.addEventListener('click', e => {
     const anchor = e.target.closest('a[href^="#"]');
     if (!anchor) return;
-
-    const href   = anchor.getAttribute('href');
+    const href = anchor.getAttribute('href');
     if (!href || href === '#') return;
-
     const target = document.querySelector(href);
     if (!target) return;
-
     e.preventDefault();
-
-    // Hitung posisi target dengan offset navbar
     const navH      = navbar.offsetHeight;
     const targetTop = target.getBoundingClientRect().top + window.scrollY - navH - 4;
-
-    // Native smooth scroll — LANGSUNG mulai tanpa delay apapun
-    window.scrollTo({
-      top:      Math.max(0, targetTop),
-      behavior: 'smooth'
-    });
-
-    // Tutup mobile menu jika terbuka
+    window.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
     if (mobOpen) closeMobileMenu();
   });
 })();
@@ -357,14 +339,15 @@ function closeMobileMenu() {
     const scene    = new THREE.Scene();
     const camera   = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.set(0, 0, 30);
+
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
 
-    const COUNT  = window.innerWidth < 768 ? 800 : 2000;
-    const pos    = new Float32Array(COUNT * 3);
-    const col    = new Float32Array(COUNT * 3);
+    const COUNT = window.innerWidth < 768 ? 800 : 2000;
+    const pos   = new Float32Array(COUNT * 3);
+    const col   = new Float32Array(COUNT * 3);
     const COLORS = [
       new THREE.Color('#38bdf8'), new THREE.Color('#0ea5e9'),
       new THREE.Color('#a78bfa'), new THREE.Color('#22d3ee'), new THREE.Color('#ffffff'),
@@ -385,10 +368,12 @@ function closeMobileMenu() {
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
     geo.setAttribute('color',    new THREE.BufferAttribute(col, 3));
+
     const mat = new THREE.PointsMaterial({
       size: 0.22, vertexColors: true, transparent: true, opacity: 0.5,
       blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true,
     });
+
     const particles = new THREE.Points(geo, mat);
     scene.add(particles);
 
@@ -398,11 +383,13 @@ function closeMobileMenu() {
       tmx = (e.clientX / window.innerWidth  - 0.5) * 2;
       tmy = (e.clientY / window.innerHeight - 0.5) * 2;
     });
+
     if (window.DeviceOrientationEvent) {
       window.addEventListener('deviceorientation', e => {
         if (e.gamma && e.beta) { tmx = e.gamma / 45; tmy = e.beta / 45 - .5; }
       });
     }
+
     window.addEventListener('scroll', () => {
       const h = document.getElementById('hero');
       if (h) scrollProg = Math.min(window.scrollY / h.offsetHeight, 1);
@@ -413,13 +400,13 @@ function closeMobileMenu() {
       requestAnimationFrame(animate);
       const t = clock.getElapsedTime();
       cmx += (tmx - cmx) * 0.03; cmy += (tmy - cmy) * 0.03;
-      particles.rotation.y = t * 0.018 + cmx * 0.05;
-      particles.rotation.x = t * 0.008 + cmy * 0.025;
-      camera.position.x += (cmx * 3  - camera.position.x) * 0.025;
-      camera.position.y += (-cmy * 2  - camera.position.y) * 0.025;
-      camera.position.z  = 30 - scrollProg * 8;
+      particles.rotation.y  = t * 0.018 + cmx * 0.05;
+      particles.rotation.x  = t * 0.008 + cmy * 0.025;
+      camera.position.x    += (cmx * 3 - camera.position.x) * 0.025;
+      camera.position.y    += (-cmy * 2 - camera.position.y) * 0.025;
+      camera.position.z     = 30 - scrollProg * 8;
       camera.lookAt(scene.position);
-      canvas.style.opacity = Math.max(0, 1 - scrollProg * 1.5).toString();
+      canvas.style.opacity  = Math.max(0, 1 - scrollProg * 1.5).toString();
       renderer.render(scene, camera);
     }
     animate();
@@ -441,7 +428,7 @@ function triggerHeroAnimations() {
     setTimeout(() => el.classList.add('revealed'), 120 + i * 180);
   });
   setTimeout(initTypingEffect, 700);
-  setTimeout(initScrollReveal,  250);
+  setTimeout(initScrollReveal, 250);
   setTimeout(() => animCounter('counter-projects', 0, 10, 1500), 1000);
 }
 
@@ -455,7 +442,7 @@ function initTypingEffect() {
   let ti = 0, ci = 0, del = false;
 
   function type() {
-    const txt  = texts[ti];
+    const txt = texts[ti];
     el.textContent = del ? txt.slice(0, ci - 1) : txt.slice(0, ci + 1);
     if (!del) {
       ci++;
@@ -496,7 +483,6 @@ function initScrollReveal() {
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (!e.isIntersecting) return;
-      // Stagger jika ada banyak children
       e.target.classList.add('revealed');
       e.target.querySelectorAll('.sk-bar-fill').forEach((b, i) => {
         const w = b.dataset.width;
@@ -526,9 +512,10 @@ function initScrollReveal() {
   let dragging = false, sx = 0, sy = 0, cx = 0, cy = 0;
   let vx = 0, vy = 0, lx = 0, ly = 0, rX = 0, rY = 0, raf;
   const DAMP = 0.88, SPRING = 0.07, TILT = 22;
+
   const pos = e => e.touches
     ? { x: e.touches[0].clientX, y: e.touches[0].clientY }
-    : { x: e.clientX,           y: e.clientY };
+    : { x: e.clientX, y: e.clientY };
 
   function onStart(e) {
     if (e.type === 'mousedown') e.preventDefault();
@@ -619,7 +606,7 @@ function initScrollReveal() {
     shine.style.opacity = '1';
   }
 
-  card.addEventListener('mousedown',  onStart);
+  card.addEventListener('mousedown', onStart);
   window.addEventListener('mousemove', onMove);
   window.addEventListener('mouseup',   onEnd);
   card.addEventListener('touchstart',  onStart, { passive: true });
@@ -676,16 +663,22 @@ function createProjectCard(p, cls) {
   const extra = ta.length - shown.length;
   const imgH  = isLg ? '260px' : '160px';
   const tags  = shown.map(t => `<span class="proj-tag">${escHtml(t)}</span>`).join('')
-              + (extra > 0 ? `<span class="proj-tag">+${extra}</span>` : '');
-  const img   = p.image_url || p.image_or_placeholder
-              || `https://placehold.co/800x450/0a0a0a/1a1a1a?text=${encodeURIComponent(p.title || 'Project')}`;
-  const demo  = p.demo_link
+    + (extra > 0 ? `<span class="proj-tag">+${extra}</span>` : '');
+
+  const img  = p.image_url || p.image_or_placeholder
+    || `https://placehold.co/800x450/0a0a0a/1a1a1a?text=${encodeURIComponent(p.title || 'Project')}`;
+
+  const demo = p.demo_link
     ? `<a href="${escHtml(p.demo_link)}" target="_blank" rel="noopener" class="proj-link-demo" onclick="event.stopPropagation()">
-         <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>Demo</a>` : '';
-  const repo  = p.repo_link
+        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>Demo</a>`
+    : '';
+
+  const repo = p.repo_link
     ? `<a href="${escHtml(p.repo_link)}" target="_blank" rel="noopener" class="proj-link-repo" onclick="event.stopPropagation()">
-         <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>Repo</a>` : '';
-  const feat  = p.is_featured ? `<span class="proj-featured-badge">⭐ Featured</span>` : '';
+        <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>Repo</a>`
+    : '';
+
+  const feat = p.is_featured ? `<span class="proj-featured-badge">⭐ Featured</span>` : '';
 
   return `
     <div class="project-card ${cls}" onclick="openProjectModal(${p.id})">
@@ -715,6 +708,7 @@ function createProjectCard(p, cls) {
 function renderGrid(projects) {
   const grid = document.getElementById('projects-grid');
   if (!grid) return;
+
   if (!projects.length) {
     grid.classList.add('hidden');
     document.getElementById('projects-empty')?.classList.remove('hidden');
@@ -728,6 +722,7 @@ function renderGrid(projects) {
     if (p.is_featured && i < 2) cls = 'proj-bento-large';
     html += createProjectCard(p, cls);
   });
+
   grid.innerHTML = html;
   grid.classList.remove('hidden');
 
@@ -746,7 +741,6 @@ function renderGrid(projects) {
   applySpans();
   window.addEventListener('resize', applySpans, { passive: true });
 
-  // Stagger reveal cards dengan transisi smooth
   grid.querySelectorAll('.project-card').forEach((c, i) => {
     c.style.opacity   = '0';
     c.style.transform = 'translateY(20px)';
@@ -760,75 +754,91 @@ function renderGrid(projects) {
 
 /* ================================================================
    COLD START LOADER — CONTROLLER
-   Mengatur tampilan, countdown timer, dan step indicator
-   ================================================================ */
+================================================================ */
+let _coldStartTimerInterval    = null;
+let _coldStartProgressInterval = null;
+let _coldStartElapsedSeconds   = 0;
+const COLD_START_TIMEOUT_MS    = 90000;
 
-let _coldStartTimerInterval = null;  // interval countdown
-let _coldStartProgressInterval = null; // interval progress bar
-let _coldStartElapsedSeconds = 0;
-const COLD_START_TIMEOUT_MS = 90000; // 90 detik total timeout
-
-/**
- * Tampilkan Cold Start Loader dan mulai semua animasinya.
- */
-function showColdStartLoader() {
-  const loader = document.getElementById('projects-cold-start-loader');
+/* ── Helper: set tampilan UI ke satu state saja ── */
+function _setProjectsUIState(state) {
+  // state: 'loading' | 'error' | 'empty' | 'content'
+  const loader  = document.getElementById('projects-cold-start-loader');
   const skeleton = document.getElementById('projects-skeleton');
-  if (!loader) return;
+  const grid    = document.getElementById('projects-grid');
+  const errEl   = document.getElementById('projects-error');
+  const emptyEl = document.getElementById('projects-empty');
+  const footer  = document.getElementById('projects-footer');
 
-  // Tampilkan loader
-  loader.style.display = 'flex';
+  // Sembunyikan semua dulu
+  if (loader)   { loader.style.display   = 'none'; loader.style.opacity = ''; loader.style.transform = ''; loader.style.transition = ''; }
+  if (skeleton) { skeleton.style.display = 'none'; skeleton.style.opacity = ''; skeleton.style.transition = ''; }
+  if (grid)     grid.classList.add('hidden');
+  if (errEl)    errEl.classList.add('hidden');
+  if (emptyEl)  emptyEl.classList.add('hidden');
+  if (footer)   footer.classList.add('hidden');
 
-  // Tampilkan skeleton di bawah loader
-  if (skeleton) skeleton.style.display = 'grid';
+  // Tampilkan sesuai state
+  if (state === 'loading') {
+    if (loader)   loader.style.display   = 'flex';
+    if (skeleton) skeleton.style.display = 'grid';
+  } else if (state === 'error') {
+    if (errEl) errEl.classList.remove('hidden');
+  } else if (state === 'empty') {
+    if (emptyEl) emptyEl.classList.remove('hidden');
+  } else if (state === 'content') {
+    if (grid)   grid.classList.remove('hidden');
+    if (footer) footer.classList.remove('hidden');
+  }
+}
 
-  // Reset state
+function showColdStartLoader() {
+  _setProjectsUIState('loading');
+
+  const loader = document.getElementById('projects-cold-start-loader');
+  if (loader) {
+    loader.style.opacity    = '';
+    loader.style.transform  = '';
+    loader.style.transition = '';
+  }
+
   _coldStartElapsedSeconds = 0;
   _resetSteps();
   _setStepActive(1);
-
-  // Mulai countdown timer
   _startCountdown();
-
-  // Mulai progress bar animasi
   _startProgressBar();
 }
 
-/**
- * Sembunyikan Cold Start Loader dan hentikan semua animasinya.
- */
 function hideColdStartLoader() {
-  const loader = document.getElementById('projects-cold-start-loader');
-  const skeleton = document.getElementById('projects-skeleton');
-
   _stopCountdown();
   _stopProgressBar();
 
+  const loader   = document.getElementById('projects-cold-start-loader');
+  const skeleton = document.getElementById('projects-skeleton');
+
   if (loader) {
-    // Animasi fade-out sebelum benar-benar disembunyikan
     loader.style.transition = 'opacity 500ms ease, transform 500ms ease';
-    loader.style.opacity = '0';
-    loader.style.transform = 'translateY(-8px)';
+    loader.style.opacity    = '0';
+    loader.style.transform  = 'translateY(-8px)';
     setTimeout(() => {
-      loader.style.display = 'none';
-      loader.style.opacity = '';
-      loader.style.transform = '';
+      loader.style.display    = 'none';
+      loader.style.opacity    = '';
+      loader.style.transform  = '';
       loader.style.transition = '';
     }, 520);
   }
 
   if (skeleton) {
     skeleton.style.transition = 'opacity 400ms ease';
-    skeleton.style.opacity = '0';
+    skeleton.style.opacity    = '0';
     setTimeout(() => {
-      skeleton.style.display = 'none';
-      skeleton.style.opacity = '';
+      skeleton.style.display    = 'none';
+      skeleton.style.opacity    = '';
       skeleton.style.transition = '';
     }, 420);
   }
 }
 
-/** Reset semua step ke kondisi awal (inactive) */
 function _resetSteps() {
   [1, 2, 3].forEach(n => {
     const step = document.getElementById(`csl-step-${n}`);
@@ -837,7 +847,6 @@ function _resetSteps() {
   });
 }
 
-/** Tandai step ke-n sebagai AKTIF, step sebelumnya sebagai DONE */
 function _setStepActive(n) {
   _resetSteps();
   for (let i = 1; i < n; i++) {
@@ -848,17 +857,14 @@ function _setStepActive(n) {
   if (current) current.classList.add('csl-step-active-state');
 }
 
-/** Mulai countdown timer dan update teks setiap detik */
 function _startCountdown() {
-  _stopCountdown(); // pastikan tidak ada interval ganda
+  _stopCountdown();
   const countdownEl = document.getElementById('csl-countdown-text');
   _coldStartElapsedSeconds = 0;
 
   _coldStartTimerInterval = setInterval(() => {
     _coldStartElapsedSeconds++;
     const elapsed = _coldStartElapsedSeconds;
-    const remaining = Math.max(0, Math.ceil(COLD_START_TIMEOUT_MS / 1000) - elapsed);
-
     if (!countdownEl) return;
 
     if (elapsed <= 5) {
@@ -880,7 +886,6 @@ function _startCountdown() {
   }, 1000);
 }
 
-/** Hentikan countdown timer */
 function _stopCountdown() {
   if (_coldStartTimerInterval) {
     clearInterval(_coldStartTimerInterval);
@@ -888,44 +893,37 @@ function _stopCountdown() {
   }
 }
 
-/** Animasikan progress bar secara bertahap hingga ~92% */
 function _startProgressBar() {
   _stopProgressBar();
   const bar = document.getElementById('csl-progress-bar');
   if (!bar) return;
+  bar.style.width      = '0%';
+  bar.style.background = '';
+  bar.style.transition = '';
 
-  bar.style.width = '0%';
-  let progress = 0;
-  const totalMs = COLD_START_TIMEOUT_MS * 0.95; // capai 92% dalam 95% dari total timeout
-  const intervalMs = 400;
+  let progress      = 0;
+  const intervalMs  = 400;
   const maxProgress = 92;
 
   _coldStartProgressInterval = setInterval(() => {
     const remaining = maxProgress - progress;
-    // Makin dekat ke atas, makin lambat naiknya (simulasi real loading)
     const increment = remaining * 0.04 + 0.3;
     progress = Math.min(progress + increment, maxProgress);
     if (bar) bar.style.width = progress + '%';
-
-    if (progress >= maxProgress) {
-      _stopProgressBar();
-    }
+    if (progress >= maxProgress) _stopProgressBar();
   }, intervalMs);
 }
 
-/** Set progress bar ke 100% (saat berhasil) */
 function _completeProgressBar() {
   _stopProgressBar();
   const bar = document.getElementById('csl-progress-bar');
   if (bar) {
     bar.style.transition = 'width 400ms ease';
-    bar.style.width = '100%';
-    // Ubah warna jadi hijau saat sukses
+    bar.style.width      = '100%';
     bar.style.background = 'linear-gradient(90deg, #22c55e, #4ade80)';
   }
 }
 
-/** Hentikan animasi progress bar */
 function _stopProgressBar() {
   if (_coldStartProgressInterval) {
     clearInterval(_coldStartProgressInterval);
@@ -934,118 +932,91 @@ function _stopProgressBar() {
 }
 
 /* ================================================================
-   FETCH PROJECTS — Versi baru dengan Cold Start handling
-   ================================================================ */
-
-/**
- * Fungsi utama fetch projects.
- * Dipanggil saat DOMContentLoaded dan bisa dipanggil ulang via retryFetchProjects().
- */
+   FETCH PROJECTS
+================================================================ */
 async function fetchProjects() {
-  const grid    = document.getElementById('projects-grid');
-  const errEl   = document.getElementById('projects-error');
-  const emptyEl = document.getElementById('projects-empty');
-  const footer  = document.getElementById('projects-footer');
+  // ── 1. Tampilkan loading state, sembunyikan semua lainnya ──
+  _setProjectsUIState('loading');
 
-  // ── 1. Reset semua state UI ke kondisi awal ──
-  if (grid)    grid.classList.add('hidden');
-  if (errEl)   errEl.classList.add('hidden');
-  if (emptyEl) emptyEl.classList.add('hidden');
-  if (footer)  footer.classList.add('hidden');
+  // Reset progress bar
+  const bar = document.getElementById('csl-progress-bar');
+  if (bar) { bar.style.width = '0%'; bar.style.background = ''; bar.style.transition = ''; }
 
-  // ── 2. Tampilkan Cold Start Loader ──
-  showColdStartLoader();
+  // Reset steps
+  _coldStartElapsedSeconds = 0;
+  _resetSteps();
+  _setStepActive(1);
+  _startCountdown();
+  _startProgressBar();
+
   updateApiStatus('loading', 'Menghubungkan ke API backend… (cold start mungkin 30–50 detik)');
 
   try {
-    // ── 3. Fetch dengan timeout 90 detik (mengakomodasi cold start) ──
-    const ctrl = new AbortController();
-    const timeoutId = setTimeout(() => ctrl.abort(), COLD_START_TIMEOUT_MS);
-
+    // ── 2. Fetch tanpa JS timeout — biarkan browser yang menunggu ──
     const res = await fetch(CONFIG.API_ENDPOINT, {
-      method: 'GET',
-      headers: {
-        'Accept':       'application/json',
-        'Content-Type': 'application/json',
-      },
-      signal: ctrl.signal,
+      method:  'GET',
+      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
     });
 
-    clearTimeout(timeoutId);
-
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
 
     const data = await res.json();
 
-    // ── 4. Parse struktur data dari berbagai format respons Laravel ──
+    // ── 3. Parse response ──
     let projects = [];
-    if (Array.isArray(data))                          projects = data;
-    else if (data.data && Array.isArray(data.data))   projects = data.data;
-    else if (data.projects && Array.isArray(data.projects)) projects = data.projects;
-    else if (data.data?.data && Array.isArray(data.data.data)) projects = data.data.data;
+    if (Array.isArray(data))                                    projects = data;
+    else if (data.data && Array.isArray(data.data))             projects = data.data;
+    else if (data.projects && Array.isArray(data.projects))     projects = data.projects;
+    else if (data.data?.data && Array.isArray(data.data.data))  projects = data.data.data;
     else throw new Error('Struktur data tidak dikenali.');
 
-    // ── 5. Simpan data ke state global ──
     allProjects    = projects;
     projectsLoaded = true;
 
-    // ── 6. Selesaikan progress bar dengan animasi hijau ──
+    // ── 4. Animasi selesai ──
     _completeProgressBar();
-    _setStepActive(4); // semua step done (step 4 tidak ada, otomatis semua jadi done)
+    _stopCountdown();
     [1, 2, 3].forEach(n => {
       const s = document.getElementById(`csl-step-${n}`);
-      if (s) {
-        s.classList.remove('csl-step-active-state');
-        s.classList.add('csl-step-done-state');
-      }
+      if (s) { s.classList.remove('csl-step-active-state'); s.classList.add('csl-step-done-state'); }
     });
 
-    // ── 7. Sembunyikan loader (dengan delay kecil agar animasi terlihat) ──
-    await new Promise(resolve => setTimeout(resolve, 500));
-    hideColdStartLoader();
+    // ── 5. Tunggu animasi sukses terlihat, lalu sembunyikan loader ──
+    await new Promise(resolve => setTimeout(resolve, 600));
 
-    // ── 8. Handle empty data ──
+    // ── 6. Sembunyikan loader, tampilkan konten ──
+    _setProjectsUIState(projects.length ? 'content' : 'empty');
+    _stopCountdown();
+    _stopProgressBar();
+
     if (!projects.length) {
       updateApiStatus('empty', 'API berhasil. Belum ada project.');
-      if (emptyEl) emptyEl.classList.remove('hidden');
       return;
     }
 
-    // ── 9. Render project cards ──
     renderGrid(projects);
 
     const countText = document.getElementById('projects-count-text');
     if (countText) countText.textContent = `Menampilkan ${projects.length} project`;
 
-    if (footer) footer.classList.remove('hidden');
-
-    updateApiStatus(
-      'success',
-      `API terhubung — ${projects.length} project dimuat`
-    );
-
-    // Update counter di hero section
+    updateApiStatus('success', `API terhubung — ${projects.length} project dimuat`);
     animCounter('counter-projects', 0, Math.max(projects.length, 10), 1400);
 
   } catch (err) {
     console.error('[Portfolio] fetchProjects error:', err);
 
-    // ── 10. Hentikan semua animasi loader ──
-    hideColdStartLoader();
+    // ── Hentikan semua animasi loader ──
+    _stopCountdown();
+    _stopProgressBar();
 
-    // ── 11. Sembunyikan grid, tampilkan error ──
-    if (grid) grid.classList.add('hidden');
-    if (errEl) errEl.classList.remove('hidden');
+    // ── Tunggu sebentar agar tidak ada tumpang tindih, LALU tampilkan error ──
+    await new Promise(resolve => setTimeout(resolve, 100));
+    _setProjectsUIState('error');
 
-    // ── 12. Tentukan pesan error yang ramah ──
+    // ── Tentukan pesan error ──
     let friendlyMsg = 'Tidak dapat terhubung ke API backend.';
-
     if (err.name === 'AbortError') {
-      friendlyMsg =
-        'Server backend tidak merespons setelah 90 detik. ' +
-        'Kemungkinan server sedang down. Silakan refresh halaman atau coba lagi nanti.';
+      friendlyMsg = 'Server backend tidak merespons. Kemungkinan server sedang down. Silakan coba lagi nanti.';
     } else if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
       friendlyMsg = `Gagal terhubung ke: ${CONFIG.API_BASE_URL} — Pastikan koneksi internet Anda stabil.`;
     } else if (err.message.includes('HTTP 404')) {
@@ -1058,7 +1029,6 @@ async function fetchProjects() {
       friendlyMsg = err.message || 'Terjadi error yang tidak diketahui.';
     }
 
-    // Set pesan ke elemen error
     const errorMsgEl = document.getElementById('error-message');
     if (errorMsgEl) errorMsgEl.textContent = friendlyMsg;
 
@@ -1066,33 +1036,27 @@ async function fetchProjects() {
   }
 }
 
-/**
- * Fungsi retry — dipanggil oleh tombol "Coba Lagi" di error state.
- * Mereset UI lalu memanggil fetchProjects() ulang.
- */
+/* ── Retry: reset state global dan panggil ulang fetch ── */
 function retryFetchProjects() {
-  // Reset state global
   allProjects    = [];
   projectsLoaded = false;
-
-  // Panggil ulang fetch
   fetchProjects();
 }
 
 /* ================================================================
    PROJECT MODAL — SMOOTH OPEN & CLOSE
-   Hanya bisa ditutup dengan tombol X atau Escape
 ================================================================ */
 function openProjectModal(projectId) {
   const project = allProjects.find(p => p.id === projectId);
   if (!project) return;
+
   const modal   = document.getElementById('project-modal');
   const content = document.getElementById('modal-content');
   if (!modal || !content) return;
 
   const ta  = getTechArr(project);
   const img = project.image_url || project.image_or_placeholder
-            || `https://placehold.co/800x450/0a0a0a/1a1a1a?text=${encodeURIComponent(project.title || 'Project')}`;
+    || `https://placehold.co/800x450/0a0a0a/1a1a1a?text=${encodeURIComponent(project.title || 'Project')}`;
 
   const techHTML = ta.length ? `
     <div>
@@ -1118,8 +1082,8 @@ function openProjectModal(projectId) {
     </div>
     <div style="position:relative;height:200px;overflow:hidden;margin-top:10px">
       <img src="${escHtml(img)}" alt="${escHtml(project.title)}"
-           style="width:100%;height:200px;object-fit:cover;transition:transform 600ms cubic-bezier(0.16,1,0.3,1)"
-           loading="lazy"/>
+        style="width:100%;height:200px;object-fit:cover;transition:transform 600ms cubic-bezier(0.16,1,0.3,1)"
+        loading="lazy"/>
       <div style="position:absolute;inset:0;background:linear-gradient(to top,#0d0d0d 0%,transparent 55%)"></div>
       ${project.is_featured ? `<span class="proj-featured-badge" style="position:absolute;top:12px;left:12px">⭐ Featured</span>` : ''}
       <button onclick="closeProjectModal()" class="modal-close-btn" type="button" aria-label="Tutup">
@@ -1151,7 +1115,6 @@ function openProjectModal(projectId) {
       ${linksHTML}
     </div>`;
 
-  // Tampilkan modal dengan animasi smooth
   modal.classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -1160,10 +1123,7 @@ function closeProjectModal() {
   const modal = document.getElementById('project-modal');
   if (!modal) return;
   modal.classList.remove('open');
-  // Delay sedikit sebelum restore scroll, tunggu animasi selesai
-  setTimeout(() => {
-    document.body.style.overflow = '';
-  }, 400);
+  setTimeout(() => { document.body.style.overflow = ''; }, 400);
 }
 
 /* ================================================================
@@ -1206,6 +1166,7 @@ window.addEventListener('error', e => {
   if (e.filename?.includes('three')) return;
   console.warn('[Portfolio] Error:', e.message);
 });
+
 window.addEventListener('unhandledrejection', e => {
   console.warn('[Portfolio] Rejection:', e.reason);
   e.preventDefault();
