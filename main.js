@@ -4,8 +4,8 @@
    CONFIG
 ================================================================ */
 const CONFIG = {
-  API_BASE_URL: 'https://residence-connections-cure-neil.trycloudflare.com/api',
-  API_ENDPOINT: 'https://residence-connections-cure-neil.trycloudflare.com/api/projects',
+  API_BASE_URL: 'https://kevin-al-faridzi-portfolio-backend.onrender.com/api',
+  API_ENDPOINT: 'https://kevin-al-faridzi-portfolio-backend.onrender.com/api/projects',
   TYPING_TEXTS: [
     'building cool web apps…',
     'learning Laravel & Tailwind…',
